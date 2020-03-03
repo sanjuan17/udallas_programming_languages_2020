@@ -1,40 +1,40 @@
 #[derive(Clone)]
 #[derive(Debug)]
-enum Primitive {
-    Add(Vec<Primitive>),
-    Multiply(Vec<Primitive>),
-    Subtract(Vec<Primitive>),
-    Number(i32),
+enum Expression {
+    Add(Vec<Expression>),
+    Multiply(Vec<Expression>),
+    Subtract(Vec<Expression>),
+    Number(f64),
 }
 
-fn evaluate(primitive: &Primitive) -> i32 {
-    match primitive {
-        Primitive::Add(primitives) => {
-            let iter = primitives.iter();
-            iter.fold(0, |total, next| total + evaluate(next))
+fn evaluate(expression: &Expression) -> f64 {
+    match expression {
+        Expression::Add(expressions) => {
+            let iter = expressions.iter();
+            iter.fold(0.0, |total, next| total + evaluate(next))
         },
-        Primitive::Multiply(primitives) => {
-            let iter = primitives.iter();
-            iter.fold(1, |total, next| total * evaluate(next))
+        Expression::Multiply(expressions) => {
+            let iter = expressions.iter();
+            iter.fold(1.0, |total, next| total * evaluate(next))
         },
-        Primitive::Subtract(primitives) => {
-            let mut iter = primitives.iter();
+        Expression::Subtract(expressions) => {
+            let mut iter = expressions.iter();
             let first = iter.next().unwrap();
             iter.fold(evaluate(first), |total, next| total - evaluate(next))
         },
-        Primitive::Number(val) => *val,
+        Expression::Number(val) => *val,
     }
 }
 
 fn main() {
-    let mut primitives = Vec::new();
-    primitives.push(Primitive::Number(3));
-    primitives.push(Primitive::Number(4));
-    primitives.push(Primitive::Number(5));
-    let add = Primitive::Add(primitives);
-    let add2 = Primitive::Multiply(vec![Primitive::Number(2), add]);
+    let mut expressions = Vec::new();
+    expressions.push(Expression::Number(3.0));
+    expressions.push(Expression::Number(4.0));
+    expressions.push(Expression::Number(5.0));
+    let add = Expression::Add(expressions);
+    let add2 = Expression::Multiply(vec![Expression::Number(2.5), add]);
     let result = evaluate(&add2);
     println!("result was {}", result);
-    let sub = Primitive::Subtract(vec![Primitive::Number(4), Primitive::Number(2)]);
+    let sub = Expression::Subtract(vec![add2, Expression::Number(2.2)]);
     println!("result was {}", evaluate(&sub));
 }
